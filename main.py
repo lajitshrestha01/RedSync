@@ -11,5 +11,5 @@ result = orchestrator_test.run(test_1)
 
 print(result)
 print(test_1.subreddit_candidates)
-print(f"validate result: {result.validate_result}")
+print(f"validate result: {result.validation_result}")
 print(test_1.agent_status)
