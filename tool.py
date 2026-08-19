@@ -1,11 +1,58 @@
-def create_draft(state): 
-    state.draft = {
-        "title" : "I build an n8n automation that saves me 10 hours every week", 
-        "body": "Test draft"
+tools = [
+    
+    {    
+    "type": "function", 
+    "function": {
+        "name" : "create_draft", 
+        "description": "Create draft from user messy content into reddit post", 
+        "parameters": {
+            "type": "object", 
+            "properties": {
+                "title" : {
+                    "type": "string", 
+                    "description": "Title of reddit content e.g how i create a agent under 24 hours",     
+                }, 
+                "body": {
+                    "type" : "string",
+                    "description": "A reddit content from messy thought of user "
+
+                },   
+            }, 
+            "required": ["title", "body"]
+            
+        }
+    }
+    }, 
+    
+    {
+        "type": "function", 
+        "function": {
+        "name": "search_subreddit", 
+        "description": "Search sub_reddit from reddit that match user content", 
+        "parameters": {
+            "type": "object", 
+            "properties": {
+                "subreddit": {
+                    "type": "string", 
+                    "description": "An sub_reddit like r/AI_agent, r/entrepreneur"
+                }, 
+            }, 
+            "required": ["subreddit"],
+        }
+    }
+        
     }
 
-def search_subreddit(state): 
-    state.subreddit_candidates = ["r/saas", "r/AI_agent"]
+]
+
+def create_draft(state, title, body): 
+    state.draft = {
+        "title" : title, 
+        "body": body, 
+    }
+
+def search_subreddit(state, subreddit): 
+    state.subreddit_candidates = [subreddit]
     
 def validate_result(state):
     state.validate_result = {
