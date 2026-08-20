@@ -2,6 +2,7 @@ import json
 from llm import get_next_action
 from tool import create_draft, search_subreddit
 from validators import evaluate_draft
+from failure import Failure,FailureType,handle_failure
 
 class Orchestrator: 
     ACTIONS =  {
@@ -64,13 +65,34 @@ class Orchestrator:
                 print(f"Validation Result : {val_result}")
                 
                 if not val_result.get("is_valid", True): 
-                    state.validation_result = val_result.get("reason")
                     state.draft = None
-                    print("Draft rehected! forcing LLM to retry")
+                    reason_str = val_result.get("reason", "")
+                    
+                    if val_result.get("has_hallucination", False): 
+                        fail_type = FailureType.USER_INPUT_REQUIRED
+                    else: 
+                        fail_type = FailureType.CORRECTABLE
+                        
+                    signal = handle_failure(
+                        Failure(fail_type, reason_str, retryable=True), state)
+                    print("Draft rejected! forcing LLM to retry")
+                    if signal == "pause" or state.agent_status == "user_input_needed": 
+                        print(f" The LLM need help: {state.validation_result}")
+                        
+                        user_correction = input("Please Provide the missing details or (type quit to stop) ")
+                        
+                        if user_correction.lower() == 'quit': 
+                            break
+                        state.user_input += f"Additional Details from user: {user_correction}"
+                        
+                        state.agent_status = "running"
+                        state.failure_streak = 0
+                        continue
+                    
+                    elif signal == 'stop': 
+                        break
             
-                else: 
-                    state.validation_result = "Passed"
-            else: 
-                state.agent_status = "max_steps_reached"
+                state.validation_result = "Passed"
+                state.failure_streak = 0
             
         return state

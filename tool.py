@@ -1,4 +1,4 @@
-from schemas import CreateDraftArgs, SearchSubredditArgs, ValidatorArgs
+from schemas import CreateDraftArgs, SearchSubredditArgs
 tools = [
     
     {    

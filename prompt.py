@@ -22,10 +22,10 @@ def evaluate_draft_prompt():
           1. The draft Must Not invent any personal experinces, tools, or facts not mentioned in the original thought
           2. Placeholders like [insert text] are considered Failures. 
           
-          You must output a Json object with exactly two keys: 
+          You must output a Json object with exactly three keys: 
           - "is_valid" : boolean (true if it passes, false if it fails)
           - "reason" : strong (a short explanation of why it passed or failed)
-          
+          - "has_hallucination": boolean (true if response deviates from source/instruction with false facts)          
           
 """
 
