@@ -11,10 +11,11 @@ base_url = os.getenv("BASE_URL")
 
 client = OpenAI(api_key=api_key, base_url=base_url)
 
-def evaluate_draft(user_input, draft_body):
-    #1.  provide the deteministic ruels to the llm
+def evaluate_draft(user_input, draft_body, context=None):
+    #1.  provide the deterministic rules to the llm
     system_prompt = evaluate_draft_prompt()
-    user_message = f"Original Thought: {user_input} \n\nDraft: {draft_body}"
+    context_str = f"\nRetrieved Subreddit Info: {context}" if context else ""
+    user_message = f"Original Thought: {user_input}{context_str}\n\nDraft: {draft_body}"
     
     response = client.chat.completions.create(
         model="gpt-oss-120b",

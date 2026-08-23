@@ -10,7 +10,7 @@ class Orchestrator:
                     "search_subreddit": search_subreddit,
     }
     VALIDATORS = {
-        "create_draft": lambda state: evaluate_draft(state.user_input, state.draft["body"])
+        "create_draft": lambda state: evaluate_draft(state.user_input, state.draft["body"], context=state.subreddit_candidates)
     }
     
                 
@@ -48,10 +48,11 @@ class Orchestrator:
 
             # 4. Execute the tool
             if actions_name not in self.ACTIONS:
-                state.validation_result = f"Unkwon tool: {actions_name}"
+                state.validation_result = f"Unknown tool: {actions_name}"
                 continue
                 
             try: 
+                state.current_action = actions_name
                 self.ACTIONS[actions_name](state, **arguments_dict)
             
             except Exception as e: 

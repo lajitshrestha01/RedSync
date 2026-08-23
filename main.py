@@ -1,14 +1,19 @@
 from state import AgentState
 from orchestrator import Orchestrator
 
-test_1 = AgentState(
-    user_input = "i automated my job, something that took, 20 hours for posting in platform like realtor weekly, i used n8n, caputre image, ai generate descrptio and automate the posting", 
-    instruction = "Turn this into a long, detailed Reddit post. If the user provided specific tools and how much money they saved, include them. Do not make them up if they are missing")
+state = AgentState(
+    user_input="I want to learn about AI Agents. Can you check if the subreddit 'AI_Agents' is a good place to start?",
+    instruction="Use the search_subreddit tool to find 'AI_Agents'. Then write a very short draft telling me how many subscribers it has.",
+    draft=None,
+    subreddit_candidates=None,
+    validation_result="",
+    agent_status="initialized"
+)
 
 orchestrator_test = Orchestrator()
-result = orchestrator_test.run(test_1)
+result = orchestrator_test.run(state)
 
 print(result)
-print(test_1.subreddit_candidates)
 print(f"validate result: {result.validation_result}")
-print(test_1.agent_status)
+print(f"subreddit: {state.subreddit_candidates}")
+print(f"agent status: {state.agent_status}")

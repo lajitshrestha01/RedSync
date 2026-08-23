@@ -7,7 +7,7 @@ class CreateDraftArgs(BaseModel):
     
 
 class SearchSubredditArgs(BaseModel): 
-    subreddit : list[str] | None = None
+    subreddit : str = Field(...,description="The exact name of the subreddit to search for. do no include 'r/' prefix example 'Python' not 'r/python'")
     
 
 class ValidatorArgs(BaseModel):
