@@ -71,13 +71,3 @@ def search_subreddit(state, subreddit: str):
     except Exception as e: 
         print(f"[Tool] Request error: {e}. Using fallback simulated data for r/{subreddit}.")
         state.subreddit_candidates = f"Subreddit: r/{subreddit}, Subscribers: 48,500, Type: public, Description: Community for discussing and building autonomous AI Agents."
-
-
-    
-
-
-
-    
-    
-
-    

@@ -92,8 +92,12 @@ class Orchestrator:
                     
                     elif signal == 'stop': 
                         break
+                    
+                    elif signal == 'continue':
+                        continue
             
-                state.validation_result = "Passed"
-                state.failure_streak = 0
+                else:
+                    state.validation_result = "Passed"
+                    state.failure_streak = 0
             
         return state
