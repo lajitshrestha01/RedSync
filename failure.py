@@ -31,13 +31,13 @@ def classify_and_decide(failure: Failure, current_streak: int) -> tuple[Action, 
     if failure.retryable and current_streak >= MAX_RETRIES:
         return Action.STOP, current_streak
 
-    # 2. Non-retryable or explicitly unrecoverable failures
-    if failure.type == FailureType.UNRECOVERABLE or not failure.retryable:
-        return Action.STOP, current_streak
-
-    # 3. Failures requiring user intervention
+    # 2. Failures requiring user intervention (e.g. missing details, hallucinations)
     if failure.type == FailureType.USER_INPUT_REQUIRED:
         return Action.PAUSE, current_streak
+
+    # 3. Explicitly unrecoverable or non-retryable failures
+    if failure.type == FailureType.UNRECOVERABLE or not failure.retryable:
+        return Action.STOP, current_streak
 
     # 4. Correctable or transient failures
     if failure.type in (FailureType.TRANSIENT, FailureType.CORRECTABLE):

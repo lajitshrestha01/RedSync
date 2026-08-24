@@ -2,8 +2,8 @@ from state import AgentState
 from orchestrator import Orchestrator
 
 state = AgentState(
-    user_input="I automate my job",
-    instruction="List the tools I used and my boss's rection.",
+    user_input="i build this automation ",
+    instruction="List the tools I used and my boss's rection. Give me long from content that explain how i use the tool and suprise my boss",
     draft=None,
     subreddit_candidates=None,
     validation_result="",
