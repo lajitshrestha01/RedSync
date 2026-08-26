@@ -1,4 +1,4 @@
-from dataclasses import dataclass 
+from dataclasses import dataclass, field
 
 @dataclass
 class AgentState: 
@@ -9,6 +9,8 @@ class AgentState:
     validation_result: str | None = None 
     agent_status: str = "initialized"
     failure_streak: int = 0
+    human_feedback: str | None = None
+    revision_history: list[dict] = field(default_factory=list)
     last_failure_reason: str | None = None
     last_failure_key: tuple | None = None
     current_action: str | None = None

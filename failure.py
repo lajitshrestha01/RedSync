@@ -19,6 +19,11 @@ class Failure:
     reason: str
     retryable: bool = True
 
+class FeedbackStatus(str, Enum): 
+    APPROVE = "approve"
+    REJECT = "reject"
+    AWAITING_APPROVAL = "awaiting_approval"
+
 MAX_RETRIES = 3
 
 
@@ -103,4 +108,41 @@ def map_validation_to_failure(validator_output: dict, state: AgentState) -> Fail
         retryable=True
             
     )
+def handle_rejection(state: AgentState, feedback: str) -> AgentState:
+    """
+    Archives the rejected draft into revision_history with user feedback,
+    clears current draft, and transitions state to revising.
+    """
+    if state.draft:
+        version = len(state.revision_history) + 1
+        state.revision_history.append({
+            "version": version,
+            "draft": state.draft.copy() if isinstance(state.draft, dict) else state.draft,
+            "feedback": feedback,
+            "status": FeedbackStatus.REJECT.value
+        })
     
+    state.human_feedback = feedback
+    state.draft = None
+    state.validation_result = None
+    state.agent_status = "revising"
+    state.failure_streak = 0
+    return state
+
+
+def handle_approval(state: AgentState) -> AgentState:
+    """
+    Archives the approved draft into revision_history and sets status to approved.
+    """
+    if state.draft:
+        version = len(state.revision_history) + 1
+        state.revision_history.append({
+            "version": version,
+            "draft": state.draft.copy() if isinstance(state.draft, dict) else state.draft,
+            "feedback": "Approved by user",
+            "status": FeedbackStatus.APPROVE.value
+        })
+    
+    state.agent_status = "approved"
+    state.validation_result = "Passed"
+    return state

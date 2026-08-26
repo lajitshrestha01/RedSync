@@ -8,6 +8,8 @@ from failure import (
     Action,
     handle_failure,
     map_validation_to_failure,
+    handle_rejection,
+    handle_approval,
 )
 
 class Orchestrator: 
@@ -37,7 +39,8 @@ class Orchestrator:
             # 1. Handle completion or text/clarification response when no tools are called
             if not result.tool_calls:
                 if state.draft and state.validation_result == "Passed":
-                    state.agent_status = "completed"
+                    if state.agent_status != "approved":
+                        handle_approval(state)
                     break
                 
                 # LLM responded with text (e.g. asking for missing details or clarifying)
@@ -151,5 +154,30 @@ class Orchestrator:
             else:
                 state.validation_result = "Passed"
                 state.failure_streak = 0
+
+            # 7. Human-in-the-Loop Review for newly validated drafts
+            if action_name == "create_draft" and state.draft and state.validation_result == "Passed":
+                state.agent_status = "awaiting_approval"
+                print("\n" + "=" * 55)
+                print("📢 DRAFT READY FOR HUMAN REVIEW:")
+                print(f"Title: {state.draft.get('title')}")
+                print(f"Body:\n{state.draft.get('body')}")
+                print("=" * 55 + "\n")
+
+                user_choice = input("Do you approve this draft? (yes / [type feedback to revise] / quit): ").strip()
+
+                if user_choice.lower() in ("yes", "y", "approve"):
+                    handle_approval(state)
+                    print("[Orchestrator] Draft approved by user!")
+                    break
+                elif user_choice.lower() == "quit":
+                    state.agent_status = "aborted"
+                    print("[Orchestrator] Workflow aborted by user.")
+                    break
+                else:
+                    feedback = user_choice if user_choice.lower() != "no" else input("Please specify what needs to be changed: ").strip()
+                    handle_rejection(state, feedback)
+                    print(f"[Orchestrator] Draft rejected. Revision #{len(state.revision_history)} recorded with feedback.")
+                    continue
                 
         return state
