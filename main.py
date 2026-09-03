@@ -2,8 +2,8 @@ from state import AgentState
 from orchestrator import Orchestrator
 
 state = AgentState(
-    user_input="i build this automation scripts that automate linkedin scraping and send connection request to the user i want.  ",
-    instruction="List the tools I used and my boss's rection. Give me long from content that explain how i use the tool and suprise my boss",
+    user_input="Planning to buy some cat toys for my cat",
+    instruction="change this into reddit content and explain how happy was my sister",
     draft=None,
     subreddit_candidates=None,
     validation_result="",
